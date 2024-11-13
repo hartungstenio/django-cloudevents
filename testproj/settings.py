@@ -103,4 +103,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 CLOUDEVENTS = {
     "WEBHOOK_ALLOWED_ORIGINS": ["*"],
+    "WEBHOOK_ALLOWED_RATE": "*",
 }

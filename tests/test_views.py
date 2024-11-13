@@ -53,7 +53,50 @@ class TestWebhookView:
         assert response.headers["WebHook-Allowed-Origin"] == "eventemitter.example.com"
         assert response.headers["WebHook-Allowed-Rate"] == "100"
 
-    @override_settings(CLOUDEVENTS={"WEBHOOK_ALLOWED_ORIGINS": ["eventemitter.example.com"]})
+    @override_settings(
+        CLOUDEVENTS={
+            "WEBHOOK_ALLOWED_ORIGINS": ["eventemitter.example.com"],
+            "WEBHOOK_ALLOWED_RATE": 50,
+        }
+    )
+    def test_options_with_allowed_origin_and_custom_rate(self, client: Client):
+        response: HttpResponse = client.options(
+            reverse("django_cloudevents:webhook"),
+            headers={
+                "WebHook-Request-Origin": "eventemitter.example.com",
+                "WebHook-Request-Rate": "100",
+            },
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.headers["WebHook-Allowed-Origin"] == "eventemitter.example.com"
+        assert response.headers["WebHook-Allowed-Rate"] == "50"
+
+    @override_settings(
+        CLOUDEVENTS={
+            "WEBHOOK_ALLOWED_ORIGINS": ["eventemitter.example.com"],
+            "WEBHOOK_ALLOWED_RATE": "*",
+        }
+    )
+    def test_options_with_allowed_origin_and_unlimited_rate(self, client: Client):
+        response: HttpResponse = client.options(
+            reverse("django_cloudevents:webhook"),
+            headers={
+                "WebHook-Request-Origin": "eventemitter.example.com",
+                "WebHook-Request-Rate": "100",
+            },
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.headers["WebHook-Allowed-Origin"] == "eventemitter.example.com"
+        assert response.headers["WebHook-Allowed-Rate"] == "*"
+
+    @override_settings(
+        CLOUDEVENTS={
+            "WEBHOOK_ALLOWED_ORIGINS": ["eventemitter.example.com"],
+            "WEBHOOK_ALLOWED_RATE": "*",
+        }
+    )
     def test_options_with_denied_origin(self, client: Client):
         response: HttpResponse = client.options(
             reverse("django_cloudevents:webhook"),

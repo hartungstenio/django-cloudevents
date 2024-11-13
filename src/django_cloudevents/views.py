@@ -34,7 +34,9 @@ class WebhookView(View):
                 "*" if settings.webhook_allow_all_origins else request.headers["WebHook-Request-Origin"]
             )
 
-            if "WebHook-Request-Rate" in request.headers:
+            if settings.webhook_allowed_rate:
+                response["WebHook-Allowed-Rate"] = str(settings.webhook_allowed_rate)
+            elif "WebHook-Request-Rate" in request.headers:
                 response["WebHook-Allowed-Rate"] = request.headers["WebHook-Request-Rate"]
         return response
 

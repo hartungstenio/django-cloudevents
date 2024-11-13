@@ -4,12 +4,13 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from cloudevents.http import from_http
-from django.conf import settings
 from django.http import HttpResponse
 from django.http.request import validate_host
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+
+from .conf import settings
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -27,10 +28,11 @@ class WebhookView(View):
 
         if "WebHook-Request-Origin" in request.headers and validate_host(
             request.headers["WebHook-Request-Origin"],
-            settings.WEBHOOK_ALLOWED_ORIGINS,
+            settings.webhook_allowed_origins,
         ):
-            any_domain = any(pattern == "*" for pattern in settings.WEBHOOK_ALLOWED_ORIGINS)
-            response["WebHook-Allowed-Origin"] = "*" if any_domain else request.headers["WebHook-Request-Origin"]
+            response["WebHook-Allowed-Origin"] = (
+                "*" if settings.webhook_allow_all_origins else request.headers["WebHook-Request-Origin"]
+            )
 
             if "WebHook-Request-Rate" in request.headers:
                 response["WebHook-Allowed-Rate"] = request.headers["WebHook-Request-Rate"]

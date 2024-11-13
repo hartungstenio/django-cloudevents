@@ -101,4 +101,6 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-WEBHOOK_ALLOWED_ORIGINS = ["*"]
+CLOUDEVENTS = {
+    "WEBHOOK_ALLOWED_ORIGINS": ["*"],
+}

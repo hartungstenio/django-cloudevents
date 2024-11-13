@@ -43,7 +43,7 @@ branch = true
 parallel = true
 
 [tool.coverage.paths]
-cloudevents = ["django_cloudevents", "*/django-cloudevents/django_cloudevents"]
+cloudevents = ["src/django_cloudevents", "*/django-cloudevents/src/django_cloudevents"]
 tests = ["tests", "*/django-cloudevents/tests"]
 
 [tool.coverage.report]
@@ -59,7 +59,7 @@ pythonpath = [".", "src"]
 asyncio_default_fixture_loop_scope = "function"
 
 [tool.hatch.build.targets.wheel]
-packages = ["django_cloudevents"]
+sources = ["src"]
 
 [tool.hatch.build.targets.sdist]
 exclude = ["/.devcontainer", "/.github"]
@@ -124,7 +124,7 @@ dependencies = [
   "mypy>=1.0.0",
 ]
 [tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:django_cloudevents tests}"
+check = "mypy --install-types --non-interactive {args:src/django_cloudevents tests}"
 
 [tool.hatch.envs.hatch-static-analysis]
 config-path = "ruff_defaults.toml"

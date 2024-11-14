@@ -1,0 +1,155 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-cloudevents"
+dynamic = ["version"]
+description = "Simple health checking for django applications"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = ["django"]
+authors = [
+  { name = "Christian Hartung", email = "hartung@live.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Framework :: Django :: 4.2",
+  "Framework :: Django :: 5.0",
+  "Framework :: Django :: 5.1",
+]
+dependencies = [
+  "cloudevents",
+  "django>=4.2",
+]
+
+[project.urls]
+Documentation = "https://github.com/hartungstenio/django-cloudevents#readme"
+Issues = "https://github.com/hartungstenio/django-cloudevents/issues"
+Source = "https://github.com/hartungstenio/django-cloudevents"
+
+[tool.coverage.run]
+source_pkgs = ["django_cloudevents", "tests"]
+branch = true
+parallel = true
+
+[tool.coverage.paths]
+cloudevents = ["django_cloudevents", "*/django-cloudevents/django_cloudevents"]
+tests = ["tests", "*/django-cloudevents/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "testproj.settings"
+pythonpath = [".", "src"]
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.hatch.build.targets.wheel]
+packages = ["django_cloudevents"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/.devcontainer", "/.github"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "faker",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-django",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.style]
+detached = true
+dependencies = ["deptry", "pre-commit"]
+
+[tool.hatch.envs.style.scripts]
+deps = "deptry ."
+lint = "pre-commit run -a -v"
+update = "pre-commit autoupdate"
+check = [
+  "deps",
+  "lint",
+]
+
+[tool.hatch.envs.tests.overrides]
+matrix.django.dependencies = [
+    { value = "django>=4.2,<5.0", if = ["4.2"] },
+    { value = "django>=5.0,<5.1", if = ["5.0"] },
+    { value = "django>=5.1,<5.2", if = ["5.1"] },
+]
+
+[[tool.hatch.envs.tests.matrix]]
+django = ["4.2"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+[[tool.hatch.envs.tests.matrix]]
+django = ["5.0", "5.1"]
+python = ["3.10", "3.11", "3.12"]
+
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:django_cloudevents tests}"
+
+[tool.hatch.envs.hatch-static-analysis]
+config-path = "ruff_defaults.toml"
+dependencies = ["ruff==0.7.1"]
+
+[[tool.mypy.overrides]]
+module = "django_cloudevents.migrations.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "django.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pytest.*"
+ignore_missing_imports = true
+
+[tool.ruff]
+extend = "ruff_defaults.toml"
+
+[tool.ruff.lint]
+extend-select = ["DJ"]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"*/migrations/*" = ["RUF012"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"

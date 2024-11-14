@@ -10,12 +10,9 @@ if TYPE_CHECKING:
 
 
 class Settings:
-    def __init__(self):
-        self.settings = getattr(django_settings, "CLOUDEVENTS", {})
-
     @property
     def webhook_allowed_origins(self) -> Sequence[str]:
-        return self.settings.get("WEBHOOK_ALLOWED_ORIGINS", ["*"])
+        return getattr(django_settings, "WEBHOOK_ALLOWED_ORIGINS", ["*"])
 
     @property
     def webhook_allow_all_origins(self) -> bool:
@@ -23,7 +20,7 @@ class Settings:
 
     @property
     def webhook_allowed_rate(self) -> int | Literal["*"] | None:
-        return self.settings.get("WEBHOOK_ALLOWED_RATE", None)
+        return getattr(django_settings, "WEBHOOK_ALLOWED_RATE", None)
 
 
 settings = Settings()

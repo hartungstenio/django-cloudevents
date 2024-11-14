@@ -11,6 +11,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from .conf import settings
+from .processors import InvalidEventProcessorError, event_processors
 from .signals import cloudevent_received
 
 if TYPE_CHECKING:
@@ -22,15 +23,17 @@ class WebhookView(View):
 
     async def post(self, request: HttpRequest) -> HttpResponse:
         cloudevent = from_http(request.headers, request.body)
-        responses = cloudevent_received.send(None, event=cloudevent)
-
-        if not responses:
-            return HttpResponse("", status=HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
+        await cloudevent_received.asend(None, cloudevent=cloudevent)
 
         try:
-            return next(r for _, r in responses if isinstance(r, HttpResponse))
-        except StopIteration:
-            return HttpResponse("", status=HTTPStatus.ACCEPTED)
+            event_processor = event_processors[cloudevent["type"]]
+        except InvalidEventProcessorError:
+            return HttpResponse(status=HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
+        else:
+            response = await event_processor.aprocess_event(cloudevent)
+            if not response:
+                return HttpResponse(status=HTTPStatus.ACCEPTED)
+            return response
 
     async def options(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         response = await super().options(request, *args, **kwargs)

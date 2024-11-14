@@ -1,3 +1,3 @@
-from django.dispatch import Signal
+from ._compat import Signal
 
 cloudevent_received = Signal()

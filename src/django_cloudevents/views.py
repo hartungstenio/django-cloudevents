@@ -11,6 +11,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from .conf import settings
+from .signals import cloudevent_received
 
 if TYPE_CHECKING:
     from django.http import HttpRequest
@@ -20,8 +21,16 @@ class WebhookView(View):
     http_method_names: ClassVar[list[str]] = ["post", "options"]
 
     async def post(self, request: HttpRequest) -> HttpResponse:
-        from_http(request.headers, request.body)
-        return HttpResponse("", status=HTTPStatus.NO_CONTENT)
+        cloudevent = from_http(request.headers, request.body)
+        responses = cloudevent_received.send(None, event=cloudevent)
+
+        if not responses:
+            return HttpResponse("", status=HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
+
+        try:
+            return next(r for _, r in responses if isinstance(r, HttpResponse))
+        except StopIteration:
+            return HttpResponse("", status=HTTPStatus.ACCEPTED)
 
     async def options(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         response = await super().options(request, *args, **kwargs)

@@ -1,12 +1,12 @@
 from http import HTTPStatus
-from typing import TYPE_CHECKING
+from unittest import mock
 
 import pytest
+from django.http import HttpResponse
 from django.test import Client, override_settings
 from django.urls import reverse
 
-if TYPE_CHECKING:
-    from django.http import HttpResponse
+from django_cloudevents.signals import cloudevent_received
 
 pytestmark = pytest.mark.django_db
 
@@ -109,3 +109,40 @@ class TestWebhookView:
         assert response.status_code == HTTPStatus.OK
         assert "WebHook-Allowed-Origin" not in response.headers
         assert "WebHook-Allowed-Rate" not in response.headers
+
+    def test_post_no_receivers(self, cloudevent, client: Client):
+        response: HttpResponse = client.post(
+            reverse("django_cloudevents:webhook"), data=cloudevent, content_type="application/json"
+        )
+
+        assert response.status_code == HTTPStatus.UNSUPPORTED_MEDIA_TYPE
+
+    def test_post_calls_signals(self, cloudevent, client: Client):
+        mock_signal = mock.Mock()
+
+        cloudevent_received.connect(mock_signal)
+        try:
+            response: HttpResponse = client.post(
+                reverse("django_cloudevents:webhook"), data=cloudevent, content_type="application/json"
+            )
+
+            assert response.status_code == HTTPStatus.ACCEPTED
+            mock_signal.assert_called_once()
+        finally:
+            cloudevent_received.disconnect(mock_signal)
+
+    def test_post_custom_response(self, cloudevent, client: Client):
+        mock_signal = mock.Mock()
+        expected = HttpResponse("", status=HTTPStatus.OK)
+        mock_signal.return_value = expected
+
+        cloudevent_received.connect(mock_signal)
+        try:
+            response: HttpResponse = client.post(
+                reverse("django_cloudevents:webhook"), data=cloudevent, content_type="application/json"
+            )
+
+            assert response == expected
+            mock_signal.assert_called_once()
+        finally:
+            cloudevent_received.disconnect(mock_signal)

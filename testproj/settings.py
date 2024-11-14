@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -101,7 +102,16 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-CLOUDEVENTS = {
-    "WEBHOOK_ALLOWED_ORIGINS": ["*"],
-    "WEBHOOK_ALLOWED_RATE": "*",
+WEBHOOK_ALLOWED_ORIGINS = ["*"]
+WEBHOOK_ALLOWED_RATE = "*"
+CLOUDEVENT_PROCESSORS = {
+    "order": {
+        "BACKEND": "testproj.processors.EchoEventProcessor",
+        "OPTIONS": {
+            "status_code": HTTPStatus.OK,
+        },
+    },
+    "stock": {
+        "BACKEND": "django_cloudevents.processors.AcceptEventProcessor",
+    },
 }

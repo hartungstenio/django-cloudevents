@@ -28,6 +28,7 @@ classifiers = [
   "Framework :: Django :: 5.1",
 ]
 dependencies = [
+  "asgiref>=3.3",
   "cloudevents",
   "django>=4.2",
 ]
@@ -52,6 +53,9 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.deptry]
+known_first_party = ["django_cloudevents"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "testproj.settings"

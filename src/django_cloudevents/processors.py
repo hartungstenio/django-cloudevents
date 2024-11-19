@@ -9,6 +9,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.connection import BaseConnectionHandler
 from django.utils.module_loading import import_string
 
+from ._compat import override
+
 if TYPE_CHECKING:
     import re
     from collections.abc import Mapping
@@ -44,9 +46,11 @@ class AsyncEventProcessor(ABC):
 
 
 class AcceptEventProcessor(AsyncEventProcessor):
+    @override
     def process_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
         return None
 
+    @override
     async def aprocess_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
         return None
 

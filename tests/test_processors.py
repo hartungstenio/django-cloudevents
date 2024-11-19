@@ -7,18 +7,20 @@ from django_cloudevents.processors import AcceptEventProcessor, EventHandler, In
 
 
 class TestAcceptEventProcessor:
-    def test_process_event(self, cloudevent):
+    def test_process_event(self, cloudevent, rf):
         given = from_dict(CloudEvent, cloudevent)
+        request = rf.post("/")
         processor = AcceptEventProcessor()
 
-        assert processor.process_event(given) is None
+        assert processor.process_event(given, request) is None
 
     @pytest.mark.asyncio
-    async def test_aprocess_event(self, cloudevent):
+    async def test_aprocess_event(self, cloudevent, async_rf):
         given = from_dict(CloudEvent, cloudevent)
+        request = async_rf.post("/")
         processor = AcceptEventProcessor()
 
-        assert await processor.aprocess_event(given) is None
+        assert await processor.aprocess_event(given, request) is None
 
 
 class TestEventHandler:

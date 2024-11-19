@@ -31,6 +31,7 @@ dependencies = [
   "asgiref>=3.3",
   "cloudevents",
   "django>=4.2",
+  "typing-extensions; python_version<'3.12'"
 ]
 
 [project.urls]

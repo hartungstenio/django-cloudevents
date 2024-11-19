@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Protocol, TypedDict
 from asgiref.sync import async_to_sync, sync_to_async
 from cloudevents.abstract import CloudEvent
 from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpResponse
 from django.utils.connection import BaseConnectionHandler
 from django.utils.module_loading import import_string
 
@@ -15,40 +14,40 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from cloudevents.abstract import CloudEvent
-    from django.http import HttpResponse
+    from django.http import HttpRequest, HttpResponse
 
 
 class EventProcessor(Protocol):
-    def process_event(self, cloudevent: CloudEvent) -> HttpResponse | None:
+    def process_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
         pass
 
-    async def aprocess_event(self, cloudevent: CloudEvent) -> HttpResponse | None:
+    async def aprocess_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
         pass
 
 
 class SyncEventProcessor(ABC):
     @abstractmethod
-    def process_event(self, cloudevent: CloudEvent) -> HttpResponse | None:
+    def process_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
         pass
 
-    async def aprocess_event(self, cloudevent: CloudEvent) -> HttpResponse | None:
-        return await sync_to_async(self.process_event)(cloudevent)
+    async def aprocess_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
+        return await sync_to_async(self.process_event)(cloudevent, request)
 
 
 class AsyncEventProcessor(ABC):
-    def process_event(self, cloudevent: CloudEvent) -> HttpResponse | None:
-        return async_to_sync(self.aprocess_event)(cloudevent)
+    def process_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
+        return async_to_sync(self.aprocess_event)(cloudevent, request)
 
     @abstractmethod
-    async def aprocess_event(self, cloudevent: CloudEvent) -> HttpResponse | None:
+    async def aprocess_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
         pass
 
 
 class AcceptEventProcessor(AsyncEventProcessor):
-    def process_event(self, cloudevent: CloudEvent) -> HttpResponse | None:  # noqa: ARG002
+    def process_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
         return None
 
-    async def aprocess_event(self, cloudevent: CloudEvent) -> HttpResponse | None:  # noqa: ARG002
+    async def aprocess_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
         return None
 
 

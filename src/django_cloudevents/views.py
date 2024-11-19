@@ -30,7 +30,7 @@ class WebhookView(View):
         except InvalidEventProcessorError:
             return HttpResponse(status=HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
         else:
-            response = await event_processor.aprocess_event(cloudevent)
+            response = await event_processor.aprocess_event(cloudevent, request)
             if not response:
                 return HttpResponse(status=HTTPStatus.ACCEPTED)
             return response

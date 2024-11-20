@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from django.http import HttpRequest
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class WebhookView(View):
     http_method_names: ClassVar[list[str]] = ["post", "options"]
 
@@ -51,7 +52,3 @@ class WebhookView(View):
             elif "WebHook-Request-Rate" in request.headers:
                 response["WebHook-Allowed-Rate"] = request.headers["WebHook-Request-Rate"]
         return response
-
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        return super().dispatch(request, *args, **kwargs)

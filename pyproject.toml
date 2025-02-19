@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "django-cloudevents"
 dynamic = ["version"]
-description = "Simple health checking for django applications"
+description = "Django application to handle CloudEvent Webhook incoming requests"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
@@ -30,6 +30,7 @@ classifiers = [
 dependencies = [
   "asgiref>=3.3",
   "cloudevents",
+  "django-stubs>=4.2",
   "django>=4.2",
   "typing-extensions; python_version<'3.12'"
 ]
@@ -58,10 +59,8 @@ exclude_lines = [
 [tool.deptry]
 known_first_party = ["django_cloudevents"]
 
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "testproj.settings"
-pythonpath = [".", "src"]
-asyncio_default_fixture_loop_scope = "function"
+[tool.django-stubs]
+django_settings_module = "testproj.settings"
 
 [tool.hatch.build.targets.wheel]
 sources = ["src"]
@@ -76,6 +75,7 @@ source = "vcs"
 dependencies = [
   "coverage[toml]>=6.5",
   "faker",
+  "mypy",
   "pytest",
   "pytest-asyncio",
   "pytest-django",
@@ -104,9 +104,11 @@ dependencies = ["deptry", "pre-commit"]
 deps = "deptry ."
 lint = "pre-commit run -a -v"
 update = "pre-commit autoupdate"
+types = "mypy --non-interactive {args:src/django_cloudevents tests}"
 check = [
   "deps",
   "lint",
+  "types",
 ]
 
 [tool.hatch.envs.tests.overrides]
@@ -124,16 +126,12 @@ python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 django = ["5.0", "5.1"]
 python = ["3.10", "3.11", "3.12"]
 
-[tool.hatch.envs.types]
-dependencies = [
-  "mypy>=1.0.0",
-]
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/django_cloudevents tests}"
-
 [tool.hatch.envs.hatch-static-analysis]
 config-path = "ruff_defaults.toml"
 dependencies = ["ruff==0.7.1"]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
 
 [[tool.mypy.overrides]]
 module = "django_cloudevents.migrations.*"
@@ -146,6 +144,11 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = "pytest.*"
 ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "testproj.settings"
+pythonpath = [".", "src"]
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.ruff]
 extend = "ruff_defaults.toml"

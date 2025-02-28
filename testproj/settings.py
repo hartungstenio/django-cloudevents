@@ -8,7 +8,7 @@ SECRET_KEY = "django-insecure-txy9b_=khny3ax$up%i&)&axs!inx7dy1b0nu26g!q-z$b)f-f
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: list[str] = []
 
 INSTALLED_APPS = [
     "django.contrib.auth",

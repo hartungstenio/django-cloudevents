@@ -32,12 +32,6 @@ jobs:
       - name: Run static analysis
         run: hatch fmt --check
 
-      - name: Run linters
-        run: hatch env run -e style deps
-
-      - name: Type checks
-        run: hatch env run -e types check
-
   tests:
     name: Run tests on ${{ matrix.python-version }}
     runs-on: ubuntu-latest

@@ -128,7 +128,7 @@ python = ["3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.hatch-static-analysis]
 config-path = "ruff_defaults.toml"
-dependencies = ["ruff==0.7.1"]
+dependencies = ["ruff==0.9.9"]
 
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]

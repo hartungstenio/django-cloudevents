@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any
 
 from cloudevents.http import from_http
 from django.http import HttpResponse
@@ -20,10 +20,10 @@ if TYPE_CHECKING:
 
 @method_decorator(csrf_exempt, name="dispatch")
 class WebhookView(View):
-    http_method_names: ClassVar[list[str]] = ["post", "options"]
+    http_method_names: list[str] = ["post", "options"]  # noqa: RUF012
 
     async def post(self, request: HttpRequest) -> HttpResponse:
-        cloudevent = from_http(request.headers, request.body)
+        cloudevent = from_http(dict(request.headers.items()), request.body)
         await cloudevent_received.asend(None, cloudevent=cloudevent)
 
         try:
@@ -36,8 +36,8 @@ class WebhookView(View):
                 return HttpResponse(status=HTTPStatus.ACCEPTED)
             return response
 
-    async def options(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        response = await super().options(request, *args, **kwargs)
+    async def options(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:  # type: ignore[override]
+        response = await super().options(request, *args, **kwargs)  # type: ignore[misc]
 
         if "WebHook-Request-Origin" in request.headers and validate_host(
             request.headers["WebHook-Request-Origin"],

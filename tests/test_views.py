@@ -2,7 +2,7 @@ from http import HTTPStatus
 from unittest import mock
 
 import pytest
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBase
 from django.test import Client, override_settings
 from django.urls import reverse
 
@@ -14,7 +14,7 @@ pytestmark = pytest.mark.django_db
 
 class TestWebhookView:
     def test_options_without_request_origin(self, client: Client):
-        response: HttpResponse = client.options(reverse("django_cloudevents:webhook"))
+        response: HttpResponseBase = client.options(reverse("django_cloudevents:webhook"))
 
         assert response.status_code == HTTPStatus.OK
         assert "WebHook-Allowed-Origin" not in response.headers
@@ -22,7 +22,7 @@ class TestWebhookView:
 
     @override_settings(WEBHOOK_ALLOWED_ORIGINS=["*"], WEBHOOK_ALLOWED_RATE=None)
     def test_options_with_every_allowed_origin(self, client: Client):
-        response: HttpResponse = client.options(
+        response: HttpResponseBase = client.options(
             reverse("django_cloudevents:webhook"), headers={"WebHook-Request-Origin": "eventemitter.example.com"}
         )
 
@@ -32,7 +32,7 @@ class TestWebhookView:
 
     @override_settings(WEBHOOK_ALLOWED_ORIGINS=["eventemitter.example.com"], WEBHOOK_ALLOWED_RATE=None)
     def test_options_with_allowed_origin(self, client: Client):
-        response: HttpResponse = client.options(
+        response: HttpResponseBase = client.options(
             reverse("django_cloudevents:webhook"), headers={"WebHook-Request-Origin": "eventemitter.example.com"}
         )
 
@@ -42,7 +42,7 @@ class TestWebhookView:
 
     @override_settings(WEBHOOK_ALLOWED_ORIGINS=["eventemitter.example.com"], WEBHOOK_ALLOWED_RATE=None)
     def test_options_with_allowed_origin_and_rate(self, client: Client):
-        response: HttpResponse = client.options(
+        response: HttpResponseBase = client.options(
             reverse("django_cloudevents:webhook"),
             headers={
                 "WebHook-Request-Origin": "eventemitter.example.com",
@@ -59,7 +59,7 @@ class TestWebhookView:
         WEBHOOK_ALLOWED_RATE=50,
     )
     def test_options_with_allowed_origin_and_custom_rate(self, client: Client):
-        response: HttpResponse = client.options(
+        response: HttpResponseBase = client.options(
             reverse("django_cloudevents:webhook"),
             headers={
                 "WebHook-Request-Origin": "eventemitter.example.com",
@@ -76,7 +76,7 @@ class TestWebhookView:
         WEBHOOK_ALLOWED_RATE="*",
     )
     def test_options_with_allowed_origin_and_unlimited_rate(self, client: Client):
-        response: HttpResponse = client.options(
+        response: HttpResponseBase = client.options(
             reverse("django_cloudevents:webhook"),
             headers={
                 "WebHook-Request-Origin": "eventemitter.example.com",
@@ -93,7 +93,7 @@ class TestWebhookView:
         WEBHOOK_ALLOWED_RATE="*",
     )
     def test_options_with_denied_origin(self, client: Client):
-        response: HttpResponse = client.options(
+        response: HttpResponseBase = client.options(
             reverse("django_cloudevents:webhook"),
             headers={
                 "WebHook-Request-Origin": "denied.example.com",
@@ -118,7 +118,7 @@ class TestWebhookView:
 
     def test_post_no_processors(self, cloudevent, client: Client):
         with mock.patch.object(event_processors, "create_connection", side_effect=InvalidEventProcessorError):
-            response: HttpResponse = client.post(
+            response: HttpResponseBase = client.post(
                 reverse("django_cloudevents:webhook"), data=cloudevent, content_type="application/json"
             )
 
@@ -131,7 +131,7 @@ class TestWebhookView:
         mock_processor.aprocess_event.return_value = expected
         mock_handler.__getitem__.return_value = mock_processor
 
-        response: HttpResponse = client.post(
+        response: HttpResponseBase = client.post(
             reverse("django_cloudevents:webhook"), data=cloudevent, content_type="application/json"
         )
 
@@ -143,7 +143,7 @@ class TestWebhookView:
         mock_processor.aprocess_event.return_value = None
         mock_handler.__getitem__.return_value = mock_processor
 
-        response: HttpResponse = client.post(
+        response: HttpResponseBase = client.post(
             reverse("django_cloudevents:webhook"), data=cloudevent, content_type="application/json"
         )
 

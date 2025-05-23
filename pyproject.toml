@@ -146,14 +146,6 @@ plugins = ["mypy_django_plugin.main"]
 module = "django_cloudevents.migrations.*"
 ignore_errors = true
 
-[[tool.mypy.overrides]]
-module = "django.*"
-ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = "pytest.*"
-ignore_missing_imports = true
-
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "testproj.settings"
 pythonpath = [".", "src"]

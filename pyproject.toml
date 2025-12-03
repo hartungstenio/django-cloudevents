@@ -8,8 +8,9 @@ description = "Django application to handle CloudEvent Webhook incoming requests
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
+license-files = ["LICENSE.txt"]
 authors = [
-  { name = "Christian Hartung", email = "hartung@live.com" },
+  { name = "Christian Hartung", email = "6785871+hartungstenio@users.noreply.github.com" },
 ]
 keywords = ["django"]
 classifiers = [

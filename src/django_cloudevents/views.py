@@ -11,6 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
+from ._compat import deprecated
 from .conf import settings
 from .processors import InvalidEventProcessorError, event_processors
 from .signals import cloudevent_received
@@ -53,6 +54,7 @@ class CloudEventWebhookView(View):
         return _cloudevent_response_meta(response)
 
 
+@deprecated("Use a view custom view inheriting from CloudEventWebhookView")
 @method_decorator(csrf_exempt, name="dispatch")
 class WebhookView(CloudEventWebhookView):
     http_method_names: list[str] = ["post", "options"]  # noqa: RUF012

@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "django-cloudevents"
 description = "Django application to handle CloudEvent Webhook incoming requests"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE.txt"]
 authors = [
@@ -20,7 +20,6 @@ classifiers = [
   "Framework :: Django :: 5.1",
   "Framework :: Django :: 5.2",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -98,7 +97,7 @@ extra-dependencies = [
 ]
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.hatch-test.overrides]
 matrix.django.dependencies = [
@@ -110,7 +109,7 @@ matrix.django.dependencies = [
 
 [[tool.hatch.envs.hatch-test.matrix]]
 django = ["4.2"]
-python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
+python = ["3.10", "3.11", "3.12", "3.13"]
 
 [[tool.hatch.envs.hatch-test.matrix]]
 django = ["5.0", "5.1"]
@@ -118,7 +117,7 @@ python = ["3.10", "3.11", "3.12"]
 
 [[tool.hatch.envs.hatch-test.matrix]]
 django = ["5.2"]
-python = ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.hatch-static-analysis]
 skip-install = false

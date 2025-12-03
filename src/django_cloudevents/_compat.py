@@ -9,6 +9,11 @@ if sys.version_info < (3, 12):
 else:
     from typing import override
 
+if sys.version_info < (3, 13):
+    from typing_extensions import deprecated
+else:
+    from warnings import deprecated
+
 if django.VERSION >= (5, 0):
     Signal = _DjangoSignal
 else:
@@ -20,5 +25,6 @@ else:
 
 __all__ = [
     "Signal",
+    "deprecated",
     "override",
 ]

@@ -39,6 +39,18 @@ Documentation = "https://github.com/hartungstenio/django-cloudevents#readme"
 Issues = "https://github.com/hartungstenio/django-cloudevents/issues"
 Source = "https://github.com/hartungstenio/django-cloudevents"
 
+[dependency-groups]
+dev = [
+  "coverage[toml]>=6.5",
+  "django-stubs>=4.2",
+  "faker",
+  "mypy",
+  "pre-commit",
+  "pytest-asyncio",
+  "pytest-django",
+  "pytest",
+]
+
 [tool.coverage.run]
 source_pkgs = ["django_cloudevents", "tests"]
 branch = true
@@ -71,44 +83,29 @@ exclude = ["/.devcontainer", "/.github"]
 source = "vcs"
 
 [tool.hatch.envs.default]
-dependencies = [
-  "coverage[toml]>=6.5",
-  "django-stubs>=4.2",
-  "faker",
-  "mypy",
-  "pre-commit",
+dependency-groups = ["dev"]
+
+[tool.hatch.envs.hatch-test]
+extra-dependencies = [
   "pytest-asyncio",
   "pytest-django",
-  "pytest",
 ]
 
-[tool.hatch.envs.default.scripts]
-test = "pytest {args:tests}"
-test-cov = "coverage run -m pytest {args:tests}"
-cov-report = [
-  "- coverage combine",
-  "coverage report",
-]
-cov = [
-  "test-cov",
-  "cov-report",
-]
-
-[[tool.hatch.envs.all.matrix]]
+[[tool.hatch.envs.hatch-test.matrix]]
 python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
-[tool.hatch.envs.tests.overrides]
+[tool.hatch.envs.hatch-test.overrides]
 matrix.django.dependencies = [
     { value = "django>=4.2,<5.0", if = ["4.2"] },
     { value = "django>=5.0,<5.1", if = ["5.0"] },
     { value = "django>=5.1,<5.2", if = ["5.1"] },
 ]
 
-[[tool.hatch.envs.tests.matrix]]
+[[tool.hatch.envs.hatch-test.matrix]]
 django = ["4.2"]
 python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
-[[tool.hatch.envs.tests.matrix]]
+[[tool.hatch.envs.hatch-test.matrix]]
 django = ["5.0", "5.1"]
 python = ["3.10", "3.11", "3.12"]
 

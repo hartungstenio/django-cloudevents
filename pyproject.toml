@@ -1,20 +1,22 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
+requires = ["hatch-vcs", "hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "django-cloudevents"
-dynamic = ["version"]
 description = "Django application to handle CloudEvent Webhook incoming requests"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
-keywords = ["django"]
 authors = [
   { name = "Christian Hartung", email = "hartung@live.com" },
 ]
+keywords = ["django"]
 classifiers = [
   "Development Status :: 4 - Beta",
+  "Framework :: Django :: 4.2",
+  "Framework :: Django :: 5.0",
+  "Framework :: Django :: 5.1",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -23,9 +25,6 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
-  "Framework :: Django :: 4.2",
-  "Framework :: Django :: 5.0",
-  "Framework :: Django :: 5.1",
 ]
 dependencies = [
   "asgiref>=3.3",
@@ -33,6 +32,7 @@ dependencies = [
   "django>=4.2",
   "typing-extensions; python_version<'3.12'"
 ]
+dynamic = ["version"]
 
 [project.urls]
 Documentation = "https://github.com/hartungstenio/django-cloudevents#readme"
@@ -46,9 +46,9 @@ dev = [
   "faker",
   "mypy",
   "pre-commit",
+  "pytest",
   "pytest-asyncio",
   "pytest-django",
-  "pytest",
 ]
 
 [tool.coverage.run]
@@ -57,7 +57,10 @@ branch = true
 parallel = true
 
 [tool.coverage.paths]
-cloudevents = ["src/django_cloudevents", "*/django-cloudevents/src/django_cloudevents"]
+cloudevents = [
+  "src/django_cloudevents",
+  "*/django-cloudevents/src/django_cloudevents"
+]
 tests = ["tests", "*/django-cloudevents/tests"]
 
 [tool.coverage.report]
@@ -96,9 +99,9 @@ python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
 [tool.hatch.envs.hatch-test.overrides]
 matrix.django.dependencies = [
-    { value = "django>=4.2,<5.0", if = ["4.2"] },
-    { value = "django>=5.0,<5.1", if = ["5.0"] },
-    { value = "django>=5.1,<5.2", if = ["5.1"] },
+  { value = "django>=4.2,<5.0", if = ["4.2"] },
+  { value = "django>=5.0,<5.1", if = ["5.0"] },
+  { value = "django>=5.1,<5.2", if = ["5.1"] },
 ]
 
 [[tool.hatch.envs.hatch-test.matrix]]
@@ -112,29 +115,7 @@ python = ["3.10", "3.11", "3.12"]
 [tool.hatch.envs.hatch-static-analysis]
 skip-install = false
 config-path = "ruff_defaults.toml"
-dependencies = [
-  "deptry",
-  "django-stubs>=4.2",
-  "mypy",
-  "pre-commit",
-  "ruff==0.9.9",
-]
-
-[tool.hatch.envs.hatch-static-analysis.scripts]
-format-check = "ruff format{env:HATCH_FMT_ARGS:} --check --diff {args:.}"
-format-fix = "ruff format{env:HATCH_FMT_ARGS:} {args:.}"
-lint-check = [
-  "ruff check{env:HATCH_FMT_ARGS:} {args:.}",
-  "deptry .",
-  "SKIP=no-commit-to-branch,ruff,ruff-format pre-commit run --all-files --verbose",
-  "mypy --install-types --non-interactive {args:src/django_cloudevents tests}",
-]
-lint-fix = [
-  "ruff check{env:HATCH_FMT_ARGS:} --fix {args:.}",
-  "deptry .",
-  "SKIP=no-commit-to-branch,ruff,ruff-format pre-commit run --all-files --verbose",
-  "mypy --install-types --non-interactive {args:src/django_cloudevents tests}",
-]
+dependencies = ["ruff==0.14.7"]
 
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]

@@ -19,6 +19,6 @@ else:
 
 
 __all__ = [
-    "override",
     "Signal",
+    "override",
 ]

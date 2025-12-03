@@ -17,12 +17,14 @@ classifiers = [
   "Framework :: Django :: 4.2",
   "Framework :: Django :: 5.0",
   "Framework :: Django :: 5.1",
+  "Framework :: Django :: 5.2",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -95,13 +97,14 @@ extra-dependencies = [
 ]
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
+python = ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.hatch-test.overrides]
 matrix.django.dependencies = [
   { value = "django>=4.2,<5.0", if = ["4.2"] },
   { value = "django>=5.0,<5.1", if = ["5.0"] },
   { value = "django>=5.1,<5.2", if = ["5.1"] },
+  { value = "django>=5.2,<6.0", if = ["5.2"] },
 ]
 
 [[tool.hatch.envs.hatch-test.matrix]]
@@ -111,6 +114,10 @@ python = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 [[tool.hatch.envs.hatch-test.matrix]]
 django = ["5.0", "5.1"]
 python = ["3.10", "3.11", "3.12"]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+django = ["5.2"]
+python = ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
 [tool.hatch.envs.hatch-static-analysis]
 skip-install = false

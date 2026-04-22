@@ -1,8 +1,11 @@
+from collections.abc import Mapping
+from typing import Any
+
 import pytest
 
 
 @pytest.fixture
-def cloudevent():
+def cloudevent() -> Mapping[str, Any]:
     return {
         "specversion": "1.0",
         "type": "com.github.pull_request.opened",

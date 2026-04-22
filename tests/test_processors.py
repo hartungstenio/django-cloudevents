@@ -1,13 +1,17 @@
+from collections.abc import Mapping
+from typing import Any
+
 import pytest
 from cloudevents.conversion import from_dict
 from cloudevents.http import CloudEvent
 from django.conf import settings
+from django.test import AsyncRequestFactory, RequestFactory
 
 from django_cloudevents.processors import AcceptEventProcessor, EventHandler, InvalidEventProcessorError
 
 
 class TestAcceptEventProcessor:
-    def test_process_event(self, cloudevent, rf):
+    def test_process_event(self, cloudevent: Mapping[str, Any], rf: RequestFactory) -> None:
         given = from_dict(CloudEvent, cloudevent)
         request = rf.post("/")
         processor = AcceptEventProcessor()
@@ -15,7 +19,7 @@ class TestAcceptEventProcessor:
         assert processor.process_event(given, request) is None
 
     @pytest.mark.asyncio
-    async def test_aprocess_event(self, cloudevent, async_rf):
+    async def test_aprocess_event(self, cloudevent: Mapping[str, Any], async_rf: AsyncRequestFactory) -> None:
         given = from_dict(CloudEvent, cloudevent)
         request = async_rf.post("/")
         processor = AcceptEventProcessor()
@@ -24,44 +28,44 @@ class TestAcceptEventProcessor:
 
 
 class TestEventHandler:
-    def test_with_custom_settings(self):
+    def test_with_custom_settings(self) -> None:
         handler = EventHandler(
             {
                 "test": {
                     "BACKEND": "django_cloudevents.processors.AcceptEventProcessor",
-                }
-            }
+                },
+            },
         )
         items = set(handler)
 
         assert items == {"test"}
 
-    def test_with_default_settings(self):
+    def test_with_default_settings(self) -> None:
         handler = EventHandler()
         items = set(handler)
 
         assert items == set(settings.CLOUDEVENT_PROCESSORS)
 
-    def test_get_existing_item(self):
+    def test_get_existing_item(self) -> None:
         handler = EventHandler(
             {
                 "test": {
                     "BACKEND": "django_cloudevents.processors.AcceptEventProcessor",
-                }
-            }
+                },
+            },
         )
 
         got = handler["test"]
 
         assert isinstance(got, AcceptEventProcessor)
 
-    def test_get_missing_item(self):
+    def test_get_missing_item(self) -> None:
         handler = EventHandler(
             {
                 "test": {
                     "BACKEND": "django_cloudevents.processors.AcceptEventProcessor",
-                }
-            }
+                },
+            },
         )
 
         with pytest.raises(InvalidEventProcessorError):

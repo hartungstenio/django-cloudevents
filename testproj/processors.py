@@ -5,7 +5,7 @@ from cloudevents.abstract import CloudEvent
 from cloudevents.conversion import to_structured
 from django.http import HttpRequest, HttpResponse
 
-from django_cloudevents.processors import SyncEventProcessor
+from django_cloudevents.processors import EventProcessor
 
 if sys.version_info < (3, 12):
     from typing_extensions import override
@@ -13,8 +13,8 @@ else:
     from typing import override
 
 
-class EchoEventProcessor(SyncEventProcessor):
-    def __init__(self, *, status_code: HTTPStatus = HTTPStatus.ACCEPTED):
+class EchoEventProcessor(EventProcessor):
+    def __init__(self, *, status_code: HTTPStatus = HTTPStatus.ACCEPTED) -> None:
         self.status_code = status_code
 
     @override

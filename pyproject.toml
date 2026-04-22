@@ -1,7 +1,3 @@
-[build-system]
-requires = ["hatch-vcs", "hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "django-cloudevents"
 description = "Django application to handle CloudEvent Webhook incoming requests"
@@ -53,6 +49,10 @@ dev = [
   "pytest-django",
 ]
 
+[build-system]
+requires = ["hatch-vcs", "hatchling"]
+build-backend = "hatchling.build"
+
 [tool.coverage.run]
 source_pkgs = ["django_cloudevents", "tests"]
 branch = true
@@ -99,14 +99,6 @@ extra-dependencies = [
 [[tool.hatch.envs.hatch-test.matrix]]
 python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
-[tool.hatch.envs.hatch-test.overrides]
-matrix.django.dependencies = [
-  { value = "django>=4.2,<5.0", if = ["4.2"] },
-  { value = "django>=5.0,<5.1", if = ["5.0"] },
-  { value = "django>=5.1,<5.2", if = ["5.1"] },
-  { value = "django>=5.2,<6.0", if = ["5.2"] },
-]
-
 [[tool.hatch.envs.hatch-test.matrix]]
 django = ["4.2"]
 python = ["3.10", "3.11", "3.12", "3.13"]
@@ -119,10 +111,18 @@ python = ["3.10", "3.11", "3.12"]
 django = ["5.2"]
 python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
+[tool.hatch.envs.hatch-test.overrides]
+matrix.django.dependencies = [
+  { value = "django>=4.2,<5.0", if = ["4.2"] },
+  { value = "django>=5.0,<5.1", if = ["5.0"] },
+  { value = "django>=5.1,<5.2", if = ["5.1"] },
+  { value = "django>=5.2,<6.0", if = ["5.2"] },
+]
+
 [tool.hatch.envs.hatch-static-analysis]
 skip-install = false
-config-path = "ruff_defaults.toml"
-dependencies = ["ruff==0.14.7"]
+config-path = "none"
+dependencies = ["ruff==0.15.11"]
 
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
@@ -140,18 +140,84 @@ module = "pytest.*"
 ignore_missing_imports = true
 
 [tool.pytest]
-DJANGO_SETTINGS_MODULE = "testproj.settings"
 pythonpath = [".", "src"]
+DJANGO_SETTINGS_MODULE = "testproj.settings"
 asyncio_default_fixture_loop_scope = "function"
 
 [tool.ruff]
-extend = "ruff_defaults.toml"
+line-length = 120
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [tool.ruff.lint]
-extend-select = ["DJ"]
+select = [
+  "ERA",
+  "YTT",
+  "ANN",
+  "ASYNC",
+  "S",
+  "BLE",
+  "FBT",
+  "B",
+  "A",
+  "COM",
+  "C4",
+  "DTZ",
+  "T10",
+  "DJ",
+  "EM",
+  "EXE",
+  "FIX",
+  "FA",
+  "INT",
+  "ISC",
+  "ICN",
+  "LOG",
+  "G",
+  "INP",
+  "PIE",
+  "T20",
+  "PT",
+  "Q",
+  "RSE",
+  "RET",
+  "SLF",
+  "SIM",
+  "SLOT",
+  "TID",
+  "TD",
+  "TC",
+  "ARG",
+  "PTH",
+  "FLY",
+  "I",
+  "C90",
+  "N",
+  "PERF",
+  "E",
+  "W",
+  "DOC",
+  "D",
+  "DOC",
+  "F",
+  "PGH",
+  "PL",
+  "UP",
+  "FURB",
+  "RUF",
+  "TRY"
+]
 
 [tool.ruff.lint.extend-per-file-ignores]
 "*/migrations/*" = ["RUF012"]
+"*/urls.py" = ["D"]
+"tests/*" = ["S101", "D"]
+"testproj/*" = ["D"]
+
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "parents"
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"

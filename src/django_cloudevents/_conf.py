@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from django.conf import settings as django_settings
 from django.core.signals import setting_changed
@@ -26,7 +26,7 @@ class Settings:
 settings = Settings()
 
 
-def reload_settings(*args, **kwargs):  # noqa: ARG001
+def reload_settings(*_args: Any, **_kwargs: Any) -> None:  # noqa: ANN401
     setting = kwargs["setting"]
     if setting == "CLOUDEVENTS":
         settings.settings = getattr(django_settings, "CLOUDEVENTS", {})

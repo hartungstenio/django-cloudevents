@@ -1,4 +1,5 @@
 import sys
+from typing import Any
 
 import django
 from asgiref.sync import sync_to_async
@@ -19,7 +20,7 @@ if django.VERSION >= (5, 0):
 else:
 
     class Signal(_DjangoSignal):  # type: ignore[no-redef]
-        async def asend(self, *args, **kwargs):
+        async def asend(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
             return await sync_to_async(self.send)(*args, **kwargs)
 
 

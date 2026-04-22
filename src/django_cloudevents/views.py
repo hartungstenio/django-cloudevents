@@ -19,7 +19,7 @@ import inspect
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
-from cloudevents.http import from_http
+from cloudevents.core.bindings.http import HTTPMessage, from_http_event
 from django.http import HttpResponse, HttpResponseBase
 from django.http.request import validate_host
 from django.utils.decorators import method_decorator
@@ -182,11 +182,12 @@ class WebhookView(CloudEventWebhookView):
             Any unhandled exception will be propagated to Django's error
             handling middleware.
         """
-        cloudevent = from_http(dict(request.headers.items()), request.body)
+        message = HTTPMessage(dict(request.headers), request.body)
+        cloudevent = from_http_event(message)
         await cloudevent_received.asend(None, cloudevent=cloudevent)
 
         try:
-            event_processor = event_processors[cloudevent["type"]]
+            event_processor = event_processors[cloudevent.get_type()]
         except InvalidEventProcessorError:
             return HttpResponse(status=HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
         else:

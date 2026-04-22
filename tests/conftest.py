@@ -2,6 +2,7 @@ from collections.abc import Mapping
 from typing import Any
 
 import pytest
+from django.utils import timezone
 
 
 @pytest.fixture
@@ -12,7 +13,7 @@ def cloudevent() -> Mapping[str, Any]:
         "source": "https://github.com/cloudevents/spec/pull",
         "subject": "123",
         "id": "A234-1234-1234",
-        "time": "2018-04-05T17:31:00Z",
+        "time": timezone.now(),
         "comexampleextension1": "value",
         "comexampleothervalue": 5,
         "datacontenttype": "text/xml",

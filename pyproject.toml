@@ -25,10 +25,10 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "asgiref>=3.3",
-  "cloudevents",
-  "django>=4.2",
-  "typing-extensions; python_version<'3.12'"
+  "asgiref (>=3.3)",
+  "cloudevents (>=2.0)",
+  "django (>=4.2)",
+  "typing-extensions; python_version < \"3.12\"",
 ]
 dynamic = ["version"]
 

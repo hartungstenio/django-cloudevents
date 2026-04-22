@@ -43,7 +43,6 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, TypedDict
 
 from asgiref.sync import async_to_sync, sync_to_async
-from cloudevents.abstract import CloudEvent
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.connection import BaseConnectionHandler
 from django.utils.module_loading import import_string
@@ -54,7 +53,7 @@ if TYPE_CHECKING:
     import re
     from collections.abc import Mapping
 
-    from cloudevents.abstract import CloudEvent
+    from cloudevents.core.base import BaseCloudEvent
     from django.http import HttpRequest, HttpResponse
 
 
@@ -83,7 +82,7 @@ class EventProcessor(ABC):
     """
 
     @abstractmethod
-    def process_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
+    def process_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:
         """Process a CloudEvent synchronously.
 
         This method must be implemented by subclasses to handle the
@@ -97,7 +96,7 @@ class EventProcessor(ABC):
             An HttpResponse object, or None to return 202 Accepted.
         """
 
-    async def aprocess_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
+    async def aprocess_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:
         """Process a CloudEvent asynchronously (auto-generated).
 
         This method is automatically implemented by wrapping the
@@ -137,7 +136,7 @@ class AsyncEventProcessor(ABC):
                     return HttpResponse(status=202)
     """
 
-    def process_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
+    def process_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:
         """Process a CloudEvent synchronously (auto-generated).
 
         This method is automatically implemented by wrapping the
@@ -153,7 +152,7 @@ class AsyncEventProcessor(ABC):
         return async_to_sync(self.aprocess_event)(cloudevent, request)
 
     @abstractmethod
-    async def aprocess_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:
+    async def aprocess_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:
         """Process a CloudEvent asynchronously.
 
         This method must be implemented by subclasses to handle the
@@ -191,7 +190,7 @@ class AcceptEventProcessor(AsyncEventProcessor):
     """
 
     @override
-    def process_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
+    def process_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
         """Process a CloudEvent synchronously.
 
         This is a no-op implementation that always returns None,
@@ -207,7 +206,7 @@ class AcceptEventProcessor(AsyncEventProcessor):
         return None
 
     @override
-    async def aprocess_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
+    async def aprocess_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
         """Process a CloudEvent asynchronously.
 
         This is a no-op implementation that always returns None,

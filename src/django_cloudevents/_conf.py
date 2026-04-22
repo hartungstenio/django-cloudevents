@@ -26,7 +26,7 @@ class Settings:
 settings = Settings()
 
 
-def reload_settings(*_args: Any, **_kwargs: Any) -> None:  # noqa: ANN401
+def reload_settings(*_args: Any, **kwargs: Any) -> None:  # noqa: ANN401
     setting = kwargs["setting"]
     if setting == "CLOUDEVENTS":
         settings.settings = getattr(django_settings, "CLOUDEVENTS", {})

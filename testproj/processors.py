@@ -1,8 +1,8 @@
 import sys
 from http import HTTPStatus
 
-from cloudevents.abstract import CloudEvent
-from cloudevents.conversion import to_structured
+from cloudevents.core.base import BaseCloudEvent
+from cloudevents.core.bindings.http import to_structured_event
 from django.http import HttpRequest, HttpResponse
 
 from django_cloudevents.processors import EventProcessor
@@ -18,6 +18,6 @@ class EchoEventProcessor(EventProcessor):
         self.status_code = status_code
 
     @override
-    def process_event(self, cloudevent: CloudEvent, request: HttpRequest) -> HttpResponse:
-        headers, data = to_structured(cloudevent)
-        return HttpResponse(data, status=self.status_code, headers=headers)
+    def process_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse:
+        message = to_structured_event(cloudevent)
+        return HttpResponse(message.body, status=self.status_code, headers=message.headers)

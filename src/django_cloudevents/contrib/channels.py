@@ -18,6 +18,8 @@ from cloudevents.core.formats.json import JSONFormat
 
 from django_cloudevents._compat import NotRequired, Unpack, override
 
+SEC_WS_PROTOCOL = b"sec-websocket-protocol"
+
 
 class ChannelEncoding(TypedDict):
     """TypedDict representing the encoding format for channel data.
@@ -180,27 +182,14 @@ class CloudEventConsumer(WebsocketConsumer):
         Raises:
             InvalidChannelLayerError: If channel layer doesn't support groups.
         """
-        try:
-            for group in self.groups:
-                async_to_sync(self.channel_layer.group_add)(group, self.channel_name)
-        except AttributeError as exc:
-            msg = "BACKEND is unconfigured or doesn't support groups"
-            raise InvalidChannelLayerError(
-                msg,
-            ) from exc
-
         for header, value in self.scope["headers"]:
-            if header.lower() == b"sec-websocket-protocol":
+            if header.lower() == SEC_WS_PROTOCOL:
                 client_subprotocols = [v.strip() for v in value.split(b",")]
                 self.protocol = _get_preferred_subprotocol(self.subprotocols, client_subprotocols)
+                break
 
         if self.protocol:
-            try:
-                self.connect()
-            except AcceptConnection:
-                self.accept()
-            except DenyConnection:
-                self.close()
+            super().websocket_connect(message)
         else:
             self.close()
 
@@ -282,27 +271,14 @@ class AsyncCloudEventConsumer(AsyncWebsocketConsumer):
         Raises:
             InvalidChannelLayerError: If channel layer doesn't support groups.
         """
-        try:
-            for group in self.groups:
-                await self.channel_layer.group_add(group, self.channel_name)
-        except AttributeError as exc:
-            msg = "BACKEND is unconfigured or doesn't support groups"
-            raise InvalidChannelLayerError(
-                msg,
-            ) from exc
-
         for header, value in self.scope["headers"]:
-            if header.lower() == b"sec-websocket-protocol":
+            if header.lower() == SEC_WS_PROTOCOL:
                 client_subprotocols = [v.strip() for v in value.split(b",")]
                 self.protocol = _get_preferred_subprotocol(self.subprotocols, client_subprotocols)
+                break
 
         if self.protocol:
-            try:
-                await self.connect()
-            except AcceptConnection:
-                await self.accept()
-            except DenyConnection:
-                await self.close()
+            await super().websocket_connect(message)
         else:
             await self.close()
 

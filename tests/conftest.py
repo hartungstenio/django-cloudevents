@@ -1,4 +1,3 @@
-from collections.abc import Mapping
 from typing import Any
 
 import pytest
@@ -6,7 +5,7 @@ from django.utils import timezone
 
 
 @pytest.fixture
-def cloudevent() -> Mapping[str, Any]:
+def cloudevent() -> dict[str, Any]:
     return {
         "specversion": "1.0",
         "type": "com.github.pull_request.opened",

@@ -8,9 +8,7 @@ encoding/decoding CloudEvents in JSON format.
 from collections.abc import Sequence
 from typing import ClassVar, Protocol, TypedDict
 
-from asgiref.sync import async_to_sync
 from asgiref.typing import WebSocketConnectEvent
-from channels.exceptions import AcceptConnection, DenyConnection, InvalidChannelLayerError
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 from cloudevents.core.base import BaseCloudEvent
 from cloudevents.core.formats.base import Format

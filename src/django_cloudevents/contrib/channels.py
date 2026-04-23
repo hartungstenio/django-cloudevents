@@ -27,11 +27,11 @@ class ChannelEncoding(TypedDict):
         bytes_data: Optional bytes data for binary encoding.
     """
 
-    text_data: NotRequired[str|None]
-    bytes_data:NotRequired[bytes|None]
+    text_data: NotRequired[str | None]
+    bytes_data: NotRequired[bytes | None]
 
 
-class Subprotocol(Format,Protocol):
+class Subprotocol(Format, Protocol):
     """Protocol defining the interface for CloudEvent subprotocols.
 
     This protocol extends the Format class and defines methods for handling
@@ -43,7 +43,7 @@ class Subprotocol(Format,Protocol):
 
     subprotocol: ClassVar[str]
 
-    def accepts(self, subprotocol:str) -> bool:
+    def accepts(self, subprotocol: str) -> bool:
         """Check if this subprotocol accepts the given subprotocol string.
 
         Args:
@@ -53,7 +53,7 @@ class Subprotocol(Format,Protocol):
             True if accepted, False otherwise.
         """
 
-    def encode(self, cloudevent:BaseCloudEvent) -> ChannelEncoding:
+    def encode(self, cloudevent: BaseCloudEvent) -> ChannelEncoding:
         """Encode a CloudEvent into channel data format.
 
         Args:
@@ -73,6 +73,7 @@ class Subprotocol(Format,Protocol):
             The decoded CloudEvent.
         """
 
+
 class JSONSubprotocol(Subprotocol, JSONFormat):
     """JSON-based subprotocol for CloudEvents.
 
@@ -82,7 +83,7 @@ class JSONSubprotocol(Subprotocol, JSONFormat):
 
     subprotocol = "cloudevents.json"
 
-    def accepts(self, subprotocol:str) -> bool:
+    def accepts(self, subprotocol: str) -> bool:
         """Check if this subprotocol accepts 'cloudevents.json'.
 
         Args:
@@ -93,7 +94,7 @@ class JSONSubprotocol(Subprotocol, JSONFormat):
         """
         return subprotocol == self.subprotocol
 
-    def encode(self, cloudevent:BaseCloudEvent) -> ChannelEncoding:
+    def encode(self, cloudevent: BaseCloudEvent) -> ChannelEncoding:
         """Encode a CloudEvent to JSON text data.
 
         Args:
@@ -102,7 +103,7 @@ class JSONSubprotocol(Subprotocol, JSONFormat):
         Returns:
             ChannelEncoding with text_data containing JSON.
         """
-        return {"text_data":self.write(cloudevent).decode()}
+        return {"text_data": self.write(cloudevent).decode()}
 
     def decode(self, **kwargs: Unpack[ChannelEncoding]) -> BaseCloudEvent:
         """Decode JSON text data into a CloudEvent.
@@ -122,14 +123,14 @@ class JSONSubprotocol(Subprotocol, JSONFormat):
         msg = "No text section for incoming WebSocket frame!"
         raise ValueError(msg)
 
-def _get_preferred_subprotocol(servers:Sequence[Subprotocol], clients:Sequence[bytes]) -> Subprotocol|None:
+
+def _get_preferred_subprotocol(servers: Sequence[Subprotocol], clients: Sequence[bytes]) -> Subprotocol | None:
     for c in clients:
         for s in servers:
             if s.accepts(c.decode()):
                 return s
 
     return None
-
 
 
 class CloudEventConsumer(WebsocketConsumer):
@@ -139,7 +140,7 @@ class CloudEventConsumer(WebsocketConsumer):
     over WebSocket connections using specified subprotocols.
     """
 
-    def __init__(self, subprotocols: Sequence[Subprotocol]|None=None) -> None:
+    def __init__(self, subprotocols: Sequence[Subprotocol] | None = None) -> None:
         """Initialize the consumer with optional subprotocols.
 
         Args:
@@ -149,10 +150,10 @@ class CloudEventConsumer(WebsocketConsumer):
         if subprotocols is None:
             subprotocols = []
         self.subprotocols = subprotocols
-        self.protocol:Subprotocol|None = None
+        self.protocol: Subprotocol | None = None
 
     @override
-    def accept(self, subprotocol:str|None = None, headers:list[tuple[str, str]]|None = None) -> None:
+    def accept(self, subprotocol: str | None = None, headers: list[tuple[str, str]] | None = None) -> None:
         """Accept the WebSocket connection with optional subprotocol.
 
         If no subprotocol is provided but one is negotiated, use it.
@@ -167,7 +168,7 @@ class CloudEventConsumer(WebsocketConsumer):
         return super().accept(subprotocol, headers)
 
     @override
-    def websocket_connect(self, message:WebSocketConnectEvent) -> None:
+    def websocket_connect(self, message: WebSocketConnectEvent) -> None:
         """Handle WebSocket connection establishment and subprotocol negotiation.
 
         Adds the consumer to channel groups, negotiates the subprotocol
@@ -189,7 +190,7 @@ class CloudEventConsumer(WebsocketConsumer):
             ) from exc
 
         for header, value in self.scope["headers"]:
-            if header.lower() ==  b"sec-websocket-protocol":
+            if header.lower() == b"sec-websocket-protocol":
                 client_subprotocols = [v.strip() for v in value.split(b",")]
                 self.protocol = _get_preferred_subprotocol(self.subprotocols, client_subprotocols)
 
@@ -203,16 +204,15 @@ class CloudEventConsumer(WebsocketConsumer):
         else:
             self.close()
 
-
     @override
-    def receive(self, text_data:str|None = None, bytes_data:bytes|None = None) -> None:
+    def receive(self, text_data: str | None = None, bytes_data: bytes | None = None) -> None:
         """Receive WebSocket data and decode it as a CloudEvent.
 
         Args:
             text_data: Optional text data from the WebSocket.
             bytes_data: Optional bytes data from the WebSocket.
         """
-        assert self.protocol # noqa: S101
+        assert self.protocol  # noqa: S101
         self.receive_cloudevent(self.protocol.decode(text_data=text_data, bytes_data=bytes_data))
 
     def receive_cloudevent(self, cloudevent: BaseCloudEvent) -> None:
@@ -224,7 +224,7 @@ class CloudEventConsumer(WebsocketConsumer):
             cloudevent: The received CloudEvent.
         """
 
-    def send_cloudevent(self, cloudevent:BaseCloudEvent,*, close:bool=False) -> None:
+    def send_cloudevent(self, cloudevent: BaseCloudEvent, *, close: bool = False) -> None:
         """Encode and send a CloudEvent over the WebSocket.
 
         Args:
@@ -242,7 +242,7 @@ class AsyncCloudEventConsumer(AsyncWebsocketConsumer):
     over WebSocket connections using specified subprotocols.
     """
 
-    def __init__(self, subprotocols: Sequence[Subprotocol]|None=None) -> None:
+    def __init__(self, subprotocols: Sequence[Subprotocol] | None = None) -> None:
         """Initialize the consumer with optional subprotocols.
 
         Args:
@@ -252,10 +252,10 @@ class AsyncCloudEventConsumer(AsyncWebsocketConsumer):
         if subprotocols is None:
             subprotocols = []
         self.subprotocols = subprotocols
-        self.protocol:Subprotocol|None = None
+        self.protocol: Subprotocol | None = None
 
     @override
-    async def accept(self, subprotocol:str|None = None, headers:list[tuple[str, str]]|None = None) -> None:
+    async def accept(self, subprotocol: str | None = None, headers: list[tuple[str, str]] | None = None) -> None:
         """Accept the WebSocket connection with optional subprotocol.
 
         If no subprotocol is provided but one is negotiated, use it.
@@ -270,7 +270,7 @@ class AsyncCloudEventConsumer(AsyncWebsocketConsumer):
         return await super().accept(subprotocol, headers)
 
     @override
-    async def websocket_connect(self, message:WebSocketConnectEvent) -> None:
+    async def websocket_connect(self, message: WebSocketConnectEvent) -> None:
         """Handle WebSocket connection establishment and subprotocol negotiation.
 
         Adds the consumer to channel groups, negotiates the subprotocol
@@ -289,10 +289,10 @@ class AsyncCloudEventConsumer(AsyncWebsocketConsumer):
             msg = "BACKEND is unconfigured or doesn't support groups"
             raise InvalidChannelLayerError(
                 msg,
-            )from exc
+            ) from exc
 
         for header, value in self.scope["headers"]:
-            if header.lower() ==  b"sec-websocket-protocol":
+            if header.lower() == b"sec-websocket-protocol":
                 client_subprotocols = [v.strip() for v in value.split(b",")]
                 self.protocol = _get_preferred_subprotocol(self.subprotocols, client_subprotocols)
 
@@ -306,9 +306,8 @@ class AsyncCloudEventConsumer(AsyncWebsocketConsumer):
         else:
             await self.close()
 
-
     @override
-    async def receive(self, text_data:str|None = None, bytes_data:bytes|None = None) -> None:
+    async def receive(self, text_data: str | None = None, bytes_data: bytes | None = None) -> None:
         """Receive WebSocket data and decode it as a CloudEvent.
 
         Args:
@@ -327,7 +326,7 @@ class AsyncCloudEventConsumer(AsyncWebsocketConsumer):
             cloudevent: The received CloudEvent.
         """
 
-    async def send_cloudevent(self, cloudevent:BaseCloudEvent, *,close:bool=False) -> None:
+    async def send_cloudevent(self, cloudevent: BaseCloudEvent, *, close: bool = False) -> None:
         """Encode and send a CloudEvent over the WebSocket.
 
         Args:

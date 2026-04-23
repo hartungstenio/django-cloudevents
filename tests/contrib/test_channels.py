@@ -71,8 +71,10 @@ class TestCloudEventConsumer:
         consumer = CloudEventConsumer([JSONSubprotocol()])
         consumer.scope = {"headers": [(b"sec-websocket-protocol", b"cloudevents.json")]}
         consumer.groups = []
-        with mock.patch.object(consumer, "connect", side_effect=AcceptConnection()) as mock_connect, \
-             mock.patch.object(consumer, "accept") as mock_accept:
+        with (
+            mock.patch.object(consumer, "connect", side_effect=AcceptConnection()) as mock_connect,
+            mock.patch.object(consumer, "accept") as mock_accept,
+        ):
             consumer.websocket_connect(mock.MagicMock())
             mock_connect.assert_called_once()
             mock_accept.assert_called_once()
@@ -81,8 +83,10 @@ class TestCloudEventConsumer:
         consumer = CloudEventConsumer([JSONSubprotocol()])
         consumer.scope = {"headers": [(b"sec-websocket-protocol", b"cloudevents.json")]}
         consumer.groups = []
-        with mock.patch.object(consumer, "connect", side_effect=DenyConnection()) as mock_connect, \
-             mock.patch.object(consumer, "close") as mock_close:
+        with (
+            mock.patch.object(consumer, "connect", side_effect=DenyConnection()) as mock_connect,
+            mock.patch.object(consumer, "close") as mock_close,
+        ):
             consumer.websocket_connect(mock.MagicMock())
             mock_connect.assert_called_once()
             mock_close.assert_called_once()
@@ -90,8 +94,10 @@ class TestCloudEventConsumer:
     def test_receive(self) -> None:
         consumer = CloudEventConsumer()
         consumer.protocol = JSONSubprotocol()
-        with mock.patch.object(consumer.protocol, "decode") as mock_decode, \
-             mock.patch.object(consumer, "receive_cloudevent") as mock_receive_cloudevent:
+        with (
+            mock.patch.object(consumer.protocol, "decode") as mock_decode,
+            mock.patch.object(consumer, "receive_cloudevent") as mock_receive_cloudevent,
+        ):
             mock_decode.return_value = mock.MagicMock()
             consumer.receive(text_data="test")
             mock_decode.assert_called_once_with(text_data="test", bytes_data=None)
@@ -101,8 +107,10 @@ class TestCloudEventConsumer:
         consumer = CloudEventConsumer()
         consumer.protocol = JSONSubprotocol()
         event = mock.MagicMock()
-        with mock.patch.object(consumer.protocol, "encode") as mock_encode, \
-             mock.patch("channels.generic.websocket.WebsocketConsumer.send") as mock_super_send:
+        with (
+            mock.patch.object(consumer.protocol, "encode") as mock_encode,
+            mock.patch("channels.generic.websocket.WebsocketConsumer.send") as mock_super_send,
+        ):
             mock_encode.return_value = {"text_data": "encoded"}
             consumer.send_cloudevent(event)
             mock_encode.assert_called_once_with(event)
@@ -149,8 +157,10 @@ class TestAsyncCloudEventConsumer:
         consumer = AsyncCloudEventConsumer([JSONSubprotocol()])
         consumer.scope = {"headers": [(b"sec-websocket-protocol", b"cloudevents.json")]}
         consumer.groups = []
-        with mock.patch.object(consumer, "connect", side_effect=AcceptConnection()) as mock_connect, \
-             mock.patch.object(consumer, "accept") as mock_accept:
+        with (
+            mock.patch.object(consumer, "connect", side_effect=AcceptConnection()) as mock_connect,
+            mock.patch.object(consumer, "accept") as mock_accept,
+        ):
             await consumer.websocket_connect(mock.MagicMock())
             mock_connect.assert_called_once()
             mock_accept.assert_called_once()
@@ -160,8 +170,10 @@ class TestAsyncCloudEventConsumer:
         consumer = AsyncCloudEventConsumer([JSONSubprotocol()])
         consumer.scope = {"headers": [(b"sec-websocket-protocol", b"cloudevents.json")]}
         consumer.groups = []
-        with mock.patch.object(consumer, "connect", side_effect=DenyConnection()) as mock_connect, \
-             mock.patch.object(consumer, "close") as mock_close:
+        with (
+            mock.patch.object(consumer, "connect", side_effect=DenyConnection()) as mock_connect,
+            mock.patch.object(consumer, "close") as mock_close,
+        ):
             await consumer.websocket_connect(mock.MagicMock())
             mock_connect.assert_called_once()
             mock_close.assert_called_once()
@@ -170,8 +182,10 @@ class TestAsyncCloudEventConsumer:
     async def test_receive(self) -> None:
         consumer = AsyncCloudEventConsumer()
         consumer.protocol = JSONSubprotocol()
-        with mock.patch.object(consumer.protocol, "decode") as mock_decode, \
-             mock.patch.object(consumer, "receive_cloudevent") as mock_receive_cloudevent:
+        with (
+            mock.patch.object(consumer.protocol, "decode") as mock_decode,
+            mock.patch.object(consumer, "receive_cloudevent") as mock_receive_cloudevent,
+        ):
             mock_decode.return_value = mock.MagicMock()
             await consumer.receive(text_data="test")
             mock_decode.assert_called_once_with(text_data="test", bytes_data=None)
@@ -182,8 +196,10 @@ class TestAsyncCloudEventConsumer:
         consumer = AsyncCloudEventConsumer()
         consumer.protocol = JSONSubprotocol()
         event = mock.MagicMock()
-        with mock.patch.object(consumer.protocol, "encode") as mock_encode, \
-             mock.patch("channels.generic.websocket.AsyncWebsocketConsumer.send") as mock_super_send:
+        with (
+            mock.patch.object(consumer.protocol, "encode") as mock_encode,
+            mock.patch("channels.generic.websocket.AsyncWebsocketConsumer.send") as mock_super_send,
+        ):
             mock_encode.return_value = {"text_data": "encoded"}
             await consumer.send_cloudevent(event)
             mock_encode.assert_called_once_with(event)

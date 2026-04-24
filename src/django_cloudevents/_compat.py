@@ -6,9 +6,9 @@ from asgiref.sync import sync_to_async
 from django.dispatch import Signal as _DjangoSignal
 
 if sys.version_info < (3, 12):
-    from typing_extensions import override
+    from typing_extensions import NotRequired, Unpack, override
 else:
-    from typing import override
+    from typing import NotRequired, Unpack, override
 
 if sys.version_info < (3, 13):
     from typing_extensions import deprecated
@@ -25,7 +25,9 @@ else:
 
 
 __all__ = [
+    "NotRequired",
     "Signal",
+    "Unpack",
     "deprecated",
     "override",
 ]

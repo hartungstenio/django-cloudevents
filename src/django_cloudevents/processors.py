@@ -190,7 +190,7 @@ class AcceptEventProcessor(AsyncEventProcessor):
     """
 
     @override
-    def process_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
+    def process_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:
         """Process a CloudEvent synchronously.
 
         This is a no-op implementation that always returns None,
@@ -206,7 +206,7 @@ class AcceptEventProcessor(AsyncEventProcessor):
         return None
 
     @override
-    async def aprocess_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:  # noqa: ARG002
+    async def aprocess_event(self, cloudevent: BaseCloudEvent, request: HttpRequest) -> HttpResponse | None:
         """Process a CloudEvent asynchronously.
 
         This is a no-op implementation that always returns None,

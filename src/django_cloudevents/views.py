@@ -7,34 +7,22 @@ The main components are:
 
 - :class:`CloudEventWebhookView`: Base class for creating custom webhook views
   that process CloudEvents. This is the recommended approach for new integrations.
-
-- :class:`WebhookView`: Legacy webhook view that automatically processes events
-  using registered event processors. This class is deprecated and should not
-  be used for new code.
 """
 
 from __future__ import annotations
 
 import inspect
-from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
-from cloudevents.core.bindings.http import HTTPMessage, from_http_event
-from django.http import HttpResponse, HttpResponseBase
 from django.http.request import validate_host
-from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 
-from ._compat import deprecated
 from ._conf import settings
-from .processors import InvalidEventProcessorError, event_processors
-from .signals import cloudevent_received
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Sequence
+    from collections.abc import Awaitable
 
-    from django.http import HttpRequest
+    from django.http import HttpRequest, HttpResponseBase
 
 
 class CloudEventWebhookView(View):

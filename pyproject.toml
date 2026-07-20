@@ -135,13 +135,18 @@ dependencies = ["ruff"]
 
 [tool.mypy]
 strict = true
-files = ["src", "tests"]
+files = [
+  "src",
+  "testproj",
+  "tests",
+]
 plugins = ["mypy_django_plugin.main"]
 enable_error_code = ["deprecated"]
 
 [tool.pyrefly]
 project-includes = [
   "src",
+  "testproj",
   "tests",
 ]
 preset = "strict"

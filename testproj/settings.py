@@ -1,5 +1,11 @@
+from __future__ import annotations
+
 from http import HTTPStatus
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from django_stubs_ext.settings import TemplatesSetting
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +37,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "testproj.urls"
 
-TEMPLATES = [
+TEMPLATES: list[TemplatesSetting] = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [],

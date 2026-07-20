@@ -5,7 +5,7 @@ Django Channels connections. It supports subprotocol negotiation for
 encoding/decoding CloudEvents in JSON format.
 """
 
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import ClassVar, Protocol, TypedDict
 
 from asgiref.typing import WebSocketConnectEvent
@@ -15,8 +15,6 @@ from cloudevents.core.formats.base import Format
 from cloudevents.core.formats.json import JSONFormat
 
 from django_cloudevents._compat import NotRequired, Unpack, override
-
-SEC_WS_PROTOCOL = b"sec-websocket-protocol"
 
 
 class ChannelEncoding(TypedDict):
@@ -127,10 +125,10 @@ class JSONSubprotocol(Subprotocol, JSONFormat):
         raise ValueError(msg)
 
 
-def _get_preferred_subprotocol(servers: Sequence[Subprotocol], clients: Sequence[bytes]) -> Subprotocol | None:
+def _get_preferred_subprotocol(servers: Sequence[Subprotocol], clients: Iterable[str]) -> Subprotocol | None:
     for c in clients:
         for s in servers:
-            if s.accepts(c.decode()):
+            if s.accepts(c):
                 return s
 
     return None
@@ -183,11 +181,7 @@ class CloudEventConsumer(WebsocketConsumer):
         Raises:
             InvalidChannelLayerError: If channel layer doesn't support groups.
         """
-        for header, value in self.scope["headers"]:
-            if header.lower() == SEC_WS_PROTOCOL:
-                client_subprotocols = [v.strip() for v in value.split(b",")]
-                self.protocol = _get_preferred_subprotocol(self.subprotocols, client_subprotocols)
-                break
+        self.protocol = _get_preferred_subprotocol(self.subprotocols, self.scope["subprotocols"])
 
         if self.protocol:
             super().websocket_connect(message)
@@ -272,11 +266,7 @@ class AsyncCloudEventConsumer(AsyncWebsocketConsumer):
         Raises:
             InvalidChannelLayerError: If channel layer doesn't support groups.
         """
-        for header, value in self.scope["headers"]:
-            if header.lower() == SEC_WS_PROTOCOL:
-                client_subprotocols = [v.strip() for v in value.split(b",")]
-                self.protocol = _get_preferred_subprotocol(self.subprotocols, client_subprotocols)
-                break
+        self.protocol = _get_preferred_subprotocol(self.subprotocols, self.scope["subprotocols"])
 
         if self.protocol:
             await super().websocket_connect(message)

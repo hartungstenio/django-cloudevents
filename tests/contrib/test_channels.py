@@ -61,7 +61,24 @@ class TestCloudEventConsumer:
 
     def test_websocket_connect_no_protocol(self) -> None:
         consumer = CloudEventConsumer([JSONSubprotocol()])
-        consumer.scope = {"headers": [(b"sec-websocket-protocol", b"unknown")]}
+        consumer.scope = {
+            "type": "websocket",
+            "asgi": {
+                "spec_version": "2.3",
+                "version": "3.0",
+            },
+            "http_version": "1.1",
+            "scheme": "ws",
+            "path": "/",
+            "raw_path": b"/",
+            "query_string": b"",
+            "root_path": "",
+            "headers": [(b"sec-websocket-protocol", b"unknown")],
+            "client": None,
+            "server": None,
+            "subprotocols": ["unknown"],
+            "extensions": None,
+        }
         consumer.groups = []
         with mock.patch.object(consumer, "close") as mock_close:
             consumer.websocket_connect(mock.MagicMock())
@@ -69,7 +86,24 @@ class TestCloudEventConsumer:
 
     def test_websocket_connect_with_protocol_accept(self) -> None:
         consumer = CloudEventConsumer([JSONSubprotocol()])
-        consumer.scope = {"headers": [(b"sec-websocket-protocol", b"cloudevents.json")]}
+        consumer.scope = {
+            "type": "websocket",
+            "asgi": {
+                "spec_version": "2.3",
+                "version": "3.0",
+            },
+            "http_version": "1.1",
+            "scheme": "ws",
+            "path": "/",
+            "raw_path": b"/",
+            "query_string": b"",
+            "root_path": "",
+            "headers": [(b"sec-websocket-protocol", b"cloudevents.json")],
+            "client": None,
+            "server": None,
+            "subprotocols": ["cloudevents.json"],
+            "extensions": None,
+        }
         consumer.groups = []
         with (
             mock.patch.object(consumer, "connect", side_effect=AcceptConnection()) as mock_connect,
@@ -81,7 +115,24 @@ class TestCloudEventConsumer:
 
     def test_websocket_connect_with_protocol_deny(self) -> None:
         consumer = CloudEventConsumer([JSONSubprotocol()])
-        consumer.scope = {"headers": [(b"sec-websocket-protocol", b"cloudevents.json")]}
+        consumer.scope = {
+            "type": "websocket",
+            "asgi": {
+                "spec_version": "2.3",
+                "version": "3.0",
+            },
+            "http_version": "1.1",
+            "scheme": "ws",
+            "path": "/",
+            "raw_path": b"/",
+            "query_string": b"",
+            "root_path": "",
+            "headers": [(b"sec-websocket-protocol", b"cloudevents.json")],
+            "client": None,
+            "server": None,
+            "subprotocols": ["cloudevents.json"],
+            "extensions": None,
+        }
         consumer.groups = []
         with (
             mock.patch.object(consumer, "connect", side_effect=DenyConnection()) as mock_connect,
@@ -146,7 +197,24 @@ class TestAsyncCloudEventConsumer:
     @pytest.mark.asyncio
     async def test_websocket_connect_no_protocol(self) -> None:
         consumer = AsyncCloudEventConsumer([JSONSubprotocol()])
-        consumer.scope = {"headers": [(b"sec-websocket-protocol", b"unknown")]}
+        consumer.scope = {
+            "type": "websocket",
+            "asgi": {
+                "spec_version": "2.3",
+                "version": "3.0",
+            },
+            "http_version": "1.1",
+            "scheme": "ws",
+            "path": "/",
+            "raw_path": b"/",
+            "query_string": b"",
+            "root_path": "",
+            "headers": [(b"sec-websocket-protocol", b"unknown")],
+            "client": None,
+            "server": None,
+            "subprotocols": ["unknown"],
+            "extensions": None,
+        }
         consumer.groups = []
         with mock.patch.object(consumer, "close") as mock_close:
             await consumer.websocket_connect(mock.MagicMock())
@@ -155,7 +223,24 @@ class TestAsyncCloudEventConsumer:
     @pytest.mark.asyncio
     async def test_websocket_connect_with_protocol_accept(self) -> None:
         consumer = AsyncCloudEventConsumer([JSONSubprotocol()])
-        consumer.scope = {"headers": [(b"sec-websocket-protocol", b"cloudevents.json")]}
+        consumer.scope = {
+            "type": "websocket",
+            "asgi": {
+                "spec_version": "2.3",
+                "version": "3.0",
+            },
+            "http_version": "1.1",
+            "scheme": "ws",
+            "path": "/",
+            "raw_path": b"/",
+            "query_string": b"",
+            "root_path": "",
+            "headers": [(b"sec-websocket-protocol", b"cloudevents.json")],
+            "client": None,
+            "server": None,
+            "subprotocols": ["cloudevents.json"],
+            "extensions": None,
+        }
         consumer.groups = []
         with (
             mock.patch.object(consumer, "connect", side_effect=AcceptConnection()) as mock_connect,
@@ -168,7 +253,24 @@ class TestAsyncCloudEventConsumer:
     @pytest.mark.asyncio
     async def test_websocket_connect_with_protocol_deny(self) -> None:
         consumer = AsyncCloudEventConsumer([JSONSubprotocol()])
-        consumer.scope = {"headers": [(b"sec-websocket-protocol", b"cloudevents.json")]}
+        consumer.scope = {
+            "type": "websocket",
+            "asgi": {
+                "spec_version": "2.3",
+                "version": "3.0",
+            },
+            "http_version": "1.1",
+            "scheme": "ws",
+            "path": "/",
+            "raw_path": b"/",
+            "query_string": b"",
+            "root_path": "",
+            "headers": [(b"sec-websocket-protocol", b"cloudevents.json")],
+            "client": None,
+            "server": None,
+            "subprotocols": ["cloudevents.json"],
+            "extensions": None,
+        }
         consumer.groups = []
         with (
             mock.patch.object(consumer, "connect", side_effect=DenyConnection()) as mock_connect,

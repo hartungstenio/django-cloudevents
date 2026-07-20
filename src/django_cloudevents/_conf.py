@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Literal
 
 from django.conf import settings as django_settings
-from django.core.signals import setting_changed
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

@@ -20,6 +20,7 @@ if django.VERSION >= (5, 0):
 else:
 
     class Signal(_DjangoSignal):  # type: ignore[no-redef]
+        # pyrefly: ignore [missing-override-decorator]
         async def asend(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
             return await sync_to_async(self.send)(*args, **kwargs)
 

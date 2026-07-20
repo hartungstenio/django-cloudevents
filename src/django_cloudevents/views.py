@@ -32,7 +32,7 @@ from .processors import InvalidEventProcessorError, event_processors
 from .signals import cloudevent_received
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable
+    from collections.abc import Awaitable, Sequence
 
     from django.http import HttpRequest
 
@@ -151,7 +151,7 @@ class WebhookView(CloudEventWebhookView):
         ```
     """
 
-    http_method_names: list[str] = ["post", "options"]  # noqa: RUF012
+    http_method_names: Sequence[str] = ["post", "options"]
 
     async def post(self, request: HttpRequest) -> HttpResponse:
         """Process POST requests containing CloudEvents.

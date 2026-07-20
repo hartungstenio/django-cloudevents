@@ -83,6 +83,7 @@ class JSONSubprotocol(Subprotocol, JSONFormat):
 
     subprotocol = "cloudevents.json"
 
+    @override
     def accepts(self, subprotocol: str) -> bool:
         """Check if this subprotocol accepts 'cloudevents.json'.
 
@@ -94,6 +95,7 @@ class JSONSubprotocol(Subprotocol, JSONFormat):
         """
         return subprotocol == self.subprotocol
 
+    @override
     def encode(self, cloudevent: BaseCloudEvent) -> ChannelEncoding:
         """Encode a CloudEvent to JSON text data.
 
@@ -105,6 +107,7 @@ class JSONSubprotocol(Subprotocol, JSONFormat):
         """
         return {"text_data": self.write(cloudevent).decode()}
 
+    @override
     def decode(self, **kwargs: Unpack[ChannelEncoding]) -> BaseCloudEvent:
         """Decode JSON text data into a CloudEvent.
 

@@ -284,6 +284,7 @@ class EventHandler(BaseConnectionHandler[EventProcessor]):
     settings_name = "CLOUDEVENT_PROCESSORS"
     exception_class = InvalidEventProcessorError
 
+    @override
     def create_connection(self, alias: str) -> EventProcessor:
         """Create and return an event processor instance for the given alias.
 

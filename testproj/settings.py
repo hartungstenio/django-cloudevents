@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from http import HTTPStatus
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -110,14 +109,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 WEBHOOK_ALLOWED_ORIGINS = ["*"]
 WEBHOOK_ALLOWED_RATE = "*"
-CLOUDEVENT_PROCESSORS = {
-    "order": {
-        "BACKEND": "testproj.processors.EchoEventProcessor",
-        "OPTIONS": {
-            "status_code": HTTPStatus.OK,
-        },
-    },
-    "stock": {
-        "BACKEND": "django_cloudevents.processors.AcceptEventProcessor",
-    },
-}

@@ -30,10 +30,8 @@ For more information about CloudEvents, see:
 https://cloudevents.io/
 """
 
-from django.urls import path
+import django_stubs_ext
 
-from . import views
+django_stubs_ext.monkeypatch()
 
-urlpatterns = [
-    path("", views.WebhookView.as_view(), name="webhook"),
-]
+del django_stubs_ext

@@ -1,4 +1,3 @@
-from collections.abc import Mapping
 from typing import Any
 
 import pytest
@@ -10,7 +9,7 @@ from django_cloudevents.processors import AcceptEventProcessor, EventHandler, In
 
 
 class TestAcceptEventProcessor:
-    def test_process_event(self, cloudevent: Mapping[str, Any], rf: RequestFactory) -> None:
+    def test_process_event(self, cloudevent: dict[str, Any], rf: RequestFactory) -> None:
         data = cloudevent.pop("data")
         given = CloudEvent(attributes=cloudevent, data=data)
         request = rf.post("/")
@@ -19,7 +18,7 @@ class TestAcceptEventProcessor:
         assert processor.process_event(given, request) is None
 
     @pytest.mark.asyncio
-    async def test_aprocess_event(self, cloudevent: Mapping[str, Any], async_rf: AsyncRequestFactory) -> None:
+    async def test_aprocess_event(self, cloudevent: dict[str, Any], async_rf: AsyncRequestFactory) -> None:
         data = cloudevent.pop("data")
         given = CloudEvent(attributes=cloudevent, data=data)
         request = async_rf.post("/")

@@ -257,11 +257,11 @@ class EventProcessorConfig(TypedDict):
     """
 
     BACKEND: str
-    SUBJECT: re.Pattern
+    SUBJECT: re.Pattern[str]
     OPTIONS: Mapping[str, Any]
 
 
-class EventHandler(BaseConnectionHandler):
+class EventHandler(BaseConnectionHandler[EventProcessor]):
     """Handler for managing event processor connections.
 
     This class extends Django's :class:`BaseConnectionHandler` to manage
@@ -306,7 +306,7 @@ class EventHandler(BaseConnectionHandler):
         options: Mapping[str, Any] = params.get("OPTIONS", {})
 
         try:
-            factory = import_string(backend)
+            factory: type[EventProcessor] = import_string(backend)
         except ImportError as e:
             msg = f"Could not find backend {backend!r}: {e}"
             raise InvalidEventProcessorError(msg) from e

@@ -37,6 +37,9 @@ jobs:
       - name: Type Checking (mypy)
         run: hatch run mypy
 
+      - name: Type Checking (pyrefly)
+        run: hatch run pyrefly check
+
       - name: Run tests
         run: |
           hatch test -i py=${{ matrix.python-version }} --cover

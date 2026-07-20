@@ -43,11 +43,12 @@ websockets = ["channels"]
 
 [dependency-groups]
 dev = [
-  "coverage[toml]>=6.5",
-  "django-stubs>=4.2",
+  "coverage[toml] (>=6.5)",
+  "django-stubs (>=4.2)",
   "faker",
   "mypy",
   "pre-commit",
+  "pyrefly",
   "pytest",
   "pytest-asyncio",
   "pytest-django",
@@ -136,6 +137,15 @@ dependencies = ["ruff"]
 strict = true
 files = ["src", "tests"]
 plugins = ["mypy_django_plugin.main"]
+enable_error_code = ["deprecated"]
+
+[tool.pyrefly]
+project-includes = [
+  "src",
+  "tests",
+]
+preset = "strict"
+min-severity = "ignore"
 
 [tool.pytest]
 pythonpath = [".", "src"]
